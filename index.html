@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <title>to-do crud</title>
+  </head>
+  <body>
+    <h1>to-do crud</h1>
+    <ul id="list"></ul>
+  </body>
+  <script type="text/javascript">
+
+    var pg;
+
+    window.onload = function() {
+      pg = thisPage();
+      pg.init();
+    }
+
+    var thisPage = function() {
+
+      var g = {};
+
+      g.listUrl = '/to-do/';
+      g.addUrl = '/to-do/';
+      g.itemUrl = '/to-do/{@id}';
+      g.completeUrl = '/to-do/complete/{@id}';
+
+      g.list = {};
+      g.item = {};
+
+      function init() {
+        getData(g.listUrl,'list');
+      }
+
+      function getData(href, context) {
+        var ajax;
+
+        ajax=new XMLHttpRequest();
+        if(ajax) {
+          ajax.open('get',href,false);
+          ajax.send(null);
+          if(ajax.status===200) {
+            switch(context) {
+              case 'list':
+                g.list = JSON.parse(ajax.responseText);
+                showList();
+                break;
+              case 'complete':
+                getData(g.listUrl, 'list');
+                break;
+              default:
+                alert('unknown context:'+context);
+                break;
+            }
+          }
+        }
+      }
+
+      function showList() {
+        var elm, li, i, x;
+
+        elm = document.getElementById('list');
+        if(elm) {
+          for(i=0,x=g.list.length;i<x;i++) {
+            li = document.createElement('li');
+            li.id = g.list[i].id;
+            li.appendChild(document.createTextNode(g.list[i].text));
+            li.onclick = itemClick;
+            elm.appendChild(li);
+          }
+        }
+      }
+
+      function itemClick() {
+        var href;
+
+        href = g.completeUrl.replace('{@id}',this.id);
+        getData(href, 'complete');
+      }
+
+      var that = {};
+      that.init = init;
+      return that;
+    }
+  </script>
+</html>
