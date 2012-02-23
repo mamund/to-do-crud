@@ -12,6 +12,7 @@
     <ul id="list"></ul>
     <input id="add-item" type="button" value="Add" />
     <input id="search" type="button" value="Search" />
+    <input id="refresh" type="button" value="Refresh" />
   </body>
 
   <script type="text/javascript">
@@ -33,16 +34,11 @@
 
       function init() {
         attachEvents();
-        makeRequest(g.listUrl,'list');
+        refreshList();
       }
 
-      function addToList() {
-        var text;
-
-        text = prompt('Enter text:');
-        if(text) {
-          makeRequest(g.listUrl,'add','text='+encodeURIComponent(text));
-        }
+      function refreshList() {
+        makeRequest(g.listUrl,'list');
       }
 
       function searchList() {
@@ -54,6 +50,19 @@
         }
       }
 
+      function addToList() {
+        var text;
+
+        text = prompt('Enter text:');
+        if(text) {
+          makeRequest(g.listUrl,'add','text='+encodeURIComponent(text));
+        }
+      }
+
+      function completeItem() {
+        makeRequest(g.completeUrl, 'complete', 'id='+this.id);
+      }
+
       function showList() {
         var elm, li, i, x;
 
@@ -63,16 +72,12 @@
           for(i=0,x=g.list.length;i<x;i++) {
             li = document.createElement('li');
             li.id = g.list[i].id;
-            li.onclick = itemClick;
+            li.onclick = completeItem;
             li.title = 'click to delete';
             li.appendChild(document.createTextNode(g.list[i].text));
             elm.appendChild(li);
           }
         }
-      }
-
-      function itemClick() {
-        makeRequest(g.completeUrl, 'complete', 'id='+this.id);
       }
 
       function attachEvents() {
@@ -86,6 +91,11 @@
         elm = document.getElementById('search');
         if(elm) {
           elm.onclick = searchList;
+        }
+
+        elm = document.getElementById('refresh');
+        if(elm) {
+          elm.onclick = refreshList;
         }
       }
 
@@ -107,11 +117,11 @@
           if(ajax.status===200 || ajax.status===204) {
             switch(context) {
               case 'list':
+              case 'search':
                 g.list = JSON.parse(ajax.responseText);
                 showList();
                 break;
               case 'add':
-              case 'search':
               case 'complete':
                 makeRequest(g.listUrl, 'list');
                 break;

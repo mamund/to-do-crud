@@ -8,12 +8,12 @@ var g = {};
 g.host = '0.0.0.0';
 g.port = (process.env.PORT ? process.env.PORT : 80);
 
-/* local data */
+/* initial data */
 g.list = [];
-g.list[0] = {id:0,text:'this is item 0'};
-g.list[1] = {id:1,text:'this is item 1'};
-g.list[2] = {id:2,text:'this is item 2'};
-g.list[3] = {id:3,text:'this is item 3'};
+g.list[0] = {id:0,text:'this is some item'};
+g.list[1] = {id:1,text:'this is another item'};
+g.list[2] = {id:2,text:'this is one more item'};
+g.list[3] = {id:3,text:'this is possibly an item'};
 
 function handler(req, res) {
 
@@ -24,8 +24,8 @@ function handler(req, res) {
   m.searchUrl = '/to-do/search';
   m.completeUrl = '/to-do/complete/';
   m.errorMessage = '<h1>{@status} - {@msg}</h1>';
-  m.textHtml = {'content-type':'text/html'};
   m.appJson  = {'content-type':'application/json'};
+  m.textHtml = {'content-type':'text/html'};
   m.search = '';
 
   main();
@@ -34,6 +34,7 @@ function handler(req, res) {
   function main() {
     var url;
 
+    // check for a search query
     if(req.url.indexOf(m.searchUrl)!==-1) {
       url = m.searchUrl;
       m.search = req.url.substring(m.searchUrl.length,255).replace('?text=','');
@@ -41,6 +42,8 @@ function handler(req, res) {
     else {
       url = req.url;
     }
+
+    // process request
     switch(url) {
       case m.homeUrl:
         switch(req.method) {
