@@ -8,23 +8,40 @@ var g = {};
 g.host = '0.0.0.0';
 g.port = (process.env.PORT ? process.env.PORT : 80);
 
+/* local data */
+g.list = [];
+g.list[0] = {id:0,text:'this is item 0'};
+g.list[1] = {id:1,text:'this is item 1'};
+g.list[2] = {id:2,text:'this is item 2'};
+g.list[3] = {id:3,text:'this is item 3'};
+
 function handler(req, res) {
 
   var m = {};
+  m.item = {};
   m.homeUrl = '/';
   m.listUrl = '/to-do/';
+  m.searchUrl = '/to-do/search';
   m.completeUrl = '/to-do/complete/';
-
   m.errorMessage = '<h1>{@status} - {@msg}</h1>';
   m.textHtml = {'content-type':'text/html'};
-
-  m.complete = {};
+  m.appJson  = {'content-type':'application/json'};
+  m.search = '';
 
   main();
 
   /* process requests */
   function main() {
-    switch(req.url) {
+    var url;
+
+    if(req.url.indexOf(m.searchUrl)!==-1) {
+      url = m.searchUrl;
+      m.search = req.url.substring(m.searchUrl.length,255).replace('?text=','');
+    }
+    else {
+      url = req.url;
+    }
+    switch(url) {
       case m.homeUrl:
         switch(req.method) {
           case 'GET':
@@ -40,23 +57,71 @@ function handler(req, res) {
           case 'GET':
             processList();
             break;
+          case 'POST':
+            addToList();
+            break;
           default:
             showError(405, 'Method not allowed');
             break;
         }
+        break;
+      case m.searchUrl:
+        switch(req.method) {
+          case 'GET':
+            searchList();
+            break;
+          default:
+            showError(405, 'Method not allowed');
+            break;
+        }
+        break;
       case m.completeUrl:
-          switch(req.method) {
-            case 'POST':
-              completeItem();
-              break;
-            default:
-              showError(405, 'Method not allowed');
-              break;
-          }
+        switch(req.method) {
+          case 'POST':
+            completeItem();
+            break;
+          default:
+            showError(405, 'Method not allowed');
+            break;
+        }
+        break;
       default:
         showError(404, 'Page not found');
         break;
     }
+  }
+
+  /* search the list */
+  function searchList() {
+    var search, i, x;
+
+    search = [];
+    for(i=0,x=g.list.length;i<x;i++) {
+      if(g.list[i].text.indexOf(m.search)!==-1) {
+        search.push(g.list[i]);
+      }
+    }
+    res.writeHead(200, 'OK', m.appJson);
+    res.end(JSON.stringify(search));
+  }
+
+  /* add item to list */
+  function addToList() {
+    var body = '';
+
+    req.on('data', function(chunk) {
+      body += chunk.toString();
+    });
+
+    req.on('end', function() {
+      m.item = querystring.parse(body);
+      sendAdd();
+    });
+  }
+  function sendAdd() {
+    g.list.push({id:g.list.length, text:m.item.text});
+    res.writeHead(204, "No content");
+    res.end();
   }
 
   /* complete single item */
@@ -68,13 +133,14 @@ function handler(req, res) {
     });
 
     req.on('end', function() {
-      m.complete = querystring.parse(body);
+      m.item = querystring.parse(body);
       sendComplete();
     });
   }
   function sendComplete() {
-      res.writeHead(204, "No content");
-      res.end();
+    g.list.splice(m.item.id,1);
+    res.writeHead(204, "No content");
+    res.end();
   }
 
   /* show html page */
@@ -93,18 +159,8 @@ function handler(req, res) {
 
   /* show list of items */
   function processList() {
-    var list, item, i, x;
-
-    list = [];
-    for(i=0, x=3;i<x; i++) {
-      item = {};
-      item.id = i;
-      item.text = 'this is item '+i;
-      list.push(item);
-    }
-
-    res.writeHead(200, 'OK', {'content-type' : 'application/xml'});
-    res.end(JSON.stringify(list));
+    res.writeHead(200, 'OK', m.appJson);
+    res.end(JSON.stringify(g.list));
   }
 
   /* show error page */
