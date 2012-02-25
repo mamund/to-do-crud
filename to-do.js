@@ -11,7 +11,7 @@ var thisPage = function() {
 
   var g = {};
   g.list = {};
-  g.listUrl = '/to-do/';
+  g.listUrl = '/to-do/'; // (for both list and add)
   g.completeUrl = '/to-do/complete/';
   g.searchUrl = '/to-do/search?text={@text}';
 
@@ -43,7 +43,7 @@ var thisPage = function() {
   }
 
   function completeItem() {
-    makeRequest(g.completeUrl, 'complete', 'id='+this.id);
+    makeRequest(g.completeUrl, 'complete', 'id='+encodeURIComponent(this.id);
   }
 
   function showList() {
