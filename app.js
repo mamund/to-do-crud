@@ -21,12 +21,12 @@ function handler(req, res) {
   m.item = {};
   m.search = '';
   m.homeUrl = '/';
-  m.scriptUrl = '/to-do.js'
+  m.scriptUrl = '/to-do.js';
   m.listUrl = '/to-do/';
   m.searchUrl = '/to-do/search';
   m.completeUrl = '/to-do/complete/';
   m.appJson  = {'content-type':'application/json'};
-  m.appHtml  = {'content-type':'text/html'};
+  m.textHtml  = {'content-type':'text/html'};
   m.appScript  = {'content-type':'application/javascript'};
   m.errorMessage = "{error:{status:'{@status}',messasge:'{@msg}'}}";
 
@@ -167,12 +167,12 @@ function handler(req, res) {
       showError(500, err.message);
     }
     else {
-      res.writeHead(200, "OK", m.appHtml);
+      res.writeHead(200, "OK", m.textHtml);
       res.end(data);
     }
   }
 
-  /* show html page */
+  /* show script file */
   function showScript() {
     fs.readFile('to-do.js', 'ascii', sendScript);
   }
