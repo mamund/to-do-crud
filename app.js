@@ -153,7 +153,17 @@ function handler(req, res) {
     });
   }
   function sendComplete() {
-    g.list.splice(m.item.id,1);
+    var tlist, i, x;
+
+    //build new list
+    tlist = [];
+    for(i=0,x=g.list.length;i<x;i++) {
+      if(g.list[i].id!=m.item.id) {
+        tlist.push(g.list[i]);
+      }
+    }
+    g.list = tlist.slice(0);
+
     res.writeHead(204, "No content");
     res.end();
   }
