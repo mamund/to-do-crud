@@ -43,7 +43,7 @@ var thisPage = function() {
   }
 
   function completeItem() {
-    makeRequest(g.completeUrl, 'complete', 'id='+encodeURIComponent(this.id);
+    makeRequest(g.completeUrl, 'complete', 'id='+encodeURIComponent(this.id));
   }
 
   function showList() {
