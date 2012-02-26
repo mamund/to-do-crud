@@ -18,10 +18,11 @@ Client applications can use this Service to do the following:
  * Add a new to-do item (POST /to-do/)
  * Filter the list of to-do items (GET /to-do/search?text={@text})
 
-TO-DO URI List
+TO-DO Data Elements
 The TO-DO service represents a single to-do item as follows:
   * {id:n, text:'...'}
 
+TO-DO URI List
 The TO-DO service uses URIs + HTTP methods to handle the actions
   * /to-do/
     Uses HTTP.GET on the URI.
@@ -40,6 +41,7 @@ The TO-DO service uses URIs + HTTP methods to handle the actions
     Content-type: application/x-www-form-urlencode
     id={@id}
 
+TO-DO Responses
 A complete response has a single array of to-do items and looks like this:
 {
   [
