@@ -66,7 +66,7 @@ var thisPage = function() {
   function attachEvents() {
     var elm;
 
-    elm = document.getElementById('add-item');
+    elm = document.getElementById('add');
     if(elm) {
       elm.onclick = addToList;
     }
@@ -89,6 +89,7 @@ var thisPage = function() {
     if(ajax) {
 
       ajax.onreadystatechange = function(){processResponse(ajax,context);};
+
       if(body) {
         ajax.open('post',href,false);
         ajax.send(body);
